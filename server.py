@@ -1,7 +1,12 @@
-#! /usr/bin/env python3
-# Echo Server
 import sys
 import socket
+import struct
+import random
+import time
+
+# Pedro Antonio Ramos
+# par25
+# 003
 
 # Read server IP address and port from command-line arguments
 serverIP = sys.argv[1]
@@ -17,9 +22,18 @@ print("The server is ready to receive on port:  " + str(serverPort) + "\n")
 # loop forever listening for incoming UDP messages
 while True:
     # Receive and print the client data from "data" socket
-    data, address = serverSocket.recvfrom(1024)
-    print("Receive data from client " + address[0] + ", " + str(address[1]) + ": " + data.decode())
+    data, address = serverSocket.recvfrom(1000)
+    data2 = struct.unpack(">ii", data)
+    time.sleep(0.0500)
+    buff = random.randint(1, 10)
+    
+    data = struct.pack(">ii", 2, data2[1])
 
-    # Echo back to client
-    # print("Sending data to   client " + address[0] + ", " + str(address[1]) + ": " + data.decode())
-    # serverSocket.sendto(data,address)
+    if buff >= 4:
+        serverSocket.sendto(data,address)
+        print(f"Responding to ping request with sequence number {(data2[1])}")
+        
+    else:
+        print(f"Message with the sequence number {(data2[1])} was dropped")
+        pass
+
